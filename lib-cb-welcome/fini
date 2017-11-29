@@ -1,0 +1,22 @@
+clear
+
+echo "  -----------------------------[ screen $STEPS of $STEPS ]----------------------------
+
+   _____ ___ _   _ ___ ____  _   _ _____ ____  _ 
+  |  ___|_ _| \ | |_ _/ ___|| | | | ____|  _ \| |
+  | |_   | ||  \| || |\___ \| |_| |  _| | | | | |
+  |  _|  | || |\  || | ___) |  _  | |___| |_| |_|
+  |_|   |___|_| \_|___|____/|_| |_|_____|____/(_)
+
+
+  THANK YOU! :)
+  You can now install whatever you want like lamp stack, packaging tools, libreoffice, etc.
+  And don't forget to check archlinux wiki for more installation & packages detail.
+
+  If you have any questions or feedback, please open an issue on:
+  URL: https://github.com/nubilfi/
+
+  Hit any key to exit..."
+
+read -n1 a
+clear

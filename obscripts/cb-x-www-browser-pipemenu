@@ -1,0 +1,200 @@
+#!/bin/bash
+# ---------------------------------------------------------------------
+# Written for CrunchBang Linux <http://crunchbang.org/>
+# by Philip Newborough (aka corenominal) <corenominal@corenominal.org>
+# ---------------------------------------------------------------------
+
+pathto=$(readlink -f "$0" | sed 's%/*[^/]\+/*$%%')
+
+if [[ -f $pathto/cb-include.cfg ]]
+then
+    source "$pathto/cb-include.cfg"
+else
+    echo "  Failed to locate cb-include.cfg"
+    exit 1
+fi
+
+I=0
+
+if [ "$1" = "--firefox" ]; then
+    terminator --title="Install Firefox Browser" --command="cb-x-www-browser-pipemenu --install-firefox"
+    exit 0
+fi
+
+if [ "$1" = "--google-chrome" ]; then
+    terminator --title="Install Google Chrome" --command="cb-x-www-browser-pipemenu --install-google-chrome"
+    exit 0
+fi
+
+
+if [ "$1" = "--install-firefox" ]; then
+    clear
+    echo ""
+    echo "  INSTALL ICEWEASEL BROWSER"
+    echo "  -------------------------"
+    echo "  This script will install Firefox."
+    echo ""
+    echo -n "  Run the installer now? (Y|n) > "
+    read a
+    if [ "$a" = "y" ] || [ "$a" = "Y" ] || \
+    [ "$a" = "" ]; then
+
+        connectiontest
+        clear
+        echo "  Updating sources..."
+        sleep 2s
+        sudo pacman -Sy
+        clear
+
+
+        if ! sudo pacman -S firefox --noconfirm; then
+            clear
+            echo ""
+            echo "  There was a problem installing Firefox."
+            echo ""
+            echo "  Hit any key to try again, or \"q\" to quit..."
+            read -n1 a
+            if [ "$a" = "q" ] || [ "$a" = "Q" ]; then
+                clear
+                exit 0
+            else
+                cb-x-www-browser-pipemenu --install-firefox
+                exit 0
+            fi
+        else
+            clear
+            echo ""
+            echo "  Firefox has been installed successfully."
+            echo ""
+            echo "  Hit any key to exit..."
+            read -n1 a
+            exit 0
+        fi
+    else
+        exit 0
+    fi
+fi
+
+if [ "$1" = "--install-google-chrome" ]; then
+    clear
+    echo ""
+    echo "  INSTALL GOOGLE CHROME WWW BROWSER"
+    echo "  ---------------------------------"
+    echo "  This script will install Google Chrome."
+    echo ""
+    echo -n "  Run the installer now? (Y|n) > "
+    read a
+    if [ "$a" = "y" ] || [ "$a" = "Y" ] || \
+    [ "$a" = "" ]; then
+
+        connectiontest
+        clear
+        #update sources
+        echo "  Updating sources..."
+        sleep 2s
+        sudo pacman -Sy
+        clear
+
+
+        if ! sudo pacman -S google-chrome --noconfirm; then
+            clear
+            echo ""
+            echo "  There was a problem installing Google Chrome."
+            echo ""
+            echo "  Hit any key to try again, or \"q\" to quit..."
+            read -n1 a
+            if [ "$a" = "q" ] || [ "$a" = "Q" ]; then
+                clear
+                exit 0
+            else
+                cb-x-www-browser-pipemenu --install-google-chrome
+                exit 0
+            fi
+        else
+            clear
+            echo ""
+            echo "  Google Chrome has been installed successfully."
+            echo ""
+            echo "  Hit any key to exit..."
+            read -n1 a
+            exit 0
+        fi
+    else
+        exit 0
+    fi
+fi
+
+# Start pipemenu
+echo "    <openbox_pipe_menu>"
+
+# Firefox
+if [ -x "/usr/lib/firefox/firefox" ];then
+    I=$((I+1))
+    cat << _menu_
+        <item label="Firefox">
+            <action name="Execute">
+                <command>
+                    /usr/lib/firefox/firefox --new-window %u
+                </command>
+            </action>
+        </item>
+_menu_
+else
+    cat << _menu_
+        <item label="Install Firefox">
+            <action name="Execute">
+                <command>
+                    cb-x-www-browser-pipemenu --firefox
+                </command>
+            </action>
+        </item>
+_menu_
+fi
+
+# Google Chrome
+if [ -x "/usr/bin/google-chrome-stable" ];then
+    I=$((I+1))
+    cat << _menu_
+        <item label="Google Chrome">
+            <action name="Execute">
+                <command>
+                    /usr/bin/google-chrome-stable
+                </command>
+            </action>
+        </item>
+        <item label="Google Chrome (Private Mode)">
+            <action name="Execute">
+                <command>
+                    /usr/bin/google-chrome-stable --incognito
+                </command>
+            </action>
+        </item>
+_menu_
+else
+    cat << _menu_
+        <item label="Install Google Chrome">
+            <action name="Execute">
+                <command>
+                    cb-x-www-browser-pipemenu --google-chrome
+                </command>
+            </action>
+        </item>
+_menu_
+fi
+
+# Configure default
+if [ $I -gt 1 ];then
+    cat << _menu_
+        <separator/>
+        <item label="Select default browser">
+            <action name="Execute">
+                <command>
+                    exo-preferred-applications
+                </command>
+            </action>
+        </item>
+_menu_
+fi
+# End pipemenu
+echo "    </openbox_pipe_menu>"
+exit 0
